@@ -14,5 +14,4 @@ class Category extends Model
     protected $casts = ['id' => 'string', 'is_active' => 'boolean'];
     protected $fillable = ['name', 'description', 'is_active'];
     public $incrementing = false;
-
 }
