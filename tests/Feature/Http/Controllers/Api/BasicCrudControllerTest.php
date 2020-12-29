@@ -10,7 +10,7 @@ use Tests\Stubs\Models\CategoryStub;
 use Tests\TestCase;
 
 
-class BasicCrudController extends TestCase
+class BasicCrudControllerTest extends TestCase
 {
     private $controller;
     protected function setUp(): void

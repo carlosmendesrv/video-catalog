@@ -10,7 +10,9 @@ use Illuminate\Testing\TestResponse;
 trait TestSaves
 {
     protected abstract function model();
+
     protected abstract function routeStore();
+
     protected abstract function routeUpdate();
 
     /**
@@ -21,8 +23,9 @@ trait TestSaves
      * @param array $testJsonData
      * @return TestResponse
      */
-    protected function assertStore(array $sendData, array  $testDataBase, array $testJsonData = null): TestResponse
+    protected function assertStore(array $sendData, array $testDataBase, array $testJsonData = null): TestResponse
     {
+        /** @var TestResponse $response */
         $response = $this->json('POST', $this->routeStore(), $sendData);
         if ($response->status() !== 201) {
             throw new Exception("Response status must be 201, given {$response->status()} :\n{$response->content()}");
@@ -33,8 +36,9 @@ trait TestSaves
         return $response;
     }
 
-    protected function assertUpdate(array $sendData, array  $testDataBase, array $testJsonData = null): TestResponse
+    protected function assertUpdate(array $sendData, array $testDataBase, array $testJsonData = null): TestResponse
     {
+        /** @var TestResponse $response */
         $response = $this->json('PUT', $this->routeUpdate(), $sendData);
         if ($response->status() !== 200) {
             throw new Exception("Response status must be 201, given {$response->status()} :\n{$response->content()}");

@@ -50,17 +50,11 @@ class GenreControllerTest extends TestCase
 
     public function testUpdate()
     {
-        factory(Genre::class)->create([
-            'name' => 'new test',
-            'is_active' => true
-        ]);
-
         $data = [
             'name' => 'test',
             'is_active' => false
         ];
         $this->assertUpdate($data, array_merge($data+ ['deleted_at' => null]));
-
     }
 
     public function testValidationData()
