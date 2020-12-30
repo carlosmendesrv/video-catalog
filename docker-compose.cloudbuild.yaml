@@ -1,0 +1,48 @@
+version: '3'
+
+services:
+  app:
+    build: .
+    container_name: app
+    volumes:
+      - ./:/var/www
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+  db:
+    build: .docker/mysql
+    container_name: db
+    image: mysql:5.7.22
+    command: --innodb-use-native-aio=0
+    restart: always
+    tty: true
+    ports:
+      - "3306:3306"
+    volumes:
+      - "./.docker/dbdata:/var/lib/mysql"
+    environment:
+      MYSQL_DATABASE: video-catalog-db
+      MYSQL_USER: root
+      MYSQL_ROOT_PASSWORD: root
+    networks:
+      - app-network
+
+  nginx:
+    container_name: nginx
+    build: ././.docker/nginx
+    restart: always
+    tty: true
+    ports:
+      - "8080:80"
+    volumes:
+     - ./:/var/www
+    depends_on:
+      - app
+    networks:
+      - app-network
+
+networks:
+    app-network:
+      driver: bridge

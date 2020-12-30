@@ -37,7 +37,6 @@ class BasicCrudControllerTest extends TestCase
         $this->assertEquals([$category->toArray()], $result);
     }
 
-
     public function testInvalidationDataInStore()
     {
         $this->expectException(ValidationException::class);
