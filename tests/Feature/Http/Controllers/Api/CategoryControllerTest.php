@@ -14,11 +14,17 @@ class CategoryControllerTest extends TestCase
     use DatabaseMigrations, TestValidations, TestSaves;
 
     private $category;
+    private $sendData;
 
     protected function setUp(): void
     {
         parent::setup();
         $this->category = factory(Category::class)->create();
+        $this->sendData = [
+            'name' => 'test',
+            'description' => 'test_description',
+            'is_active' => false
+        ];
     }
 
     public function testIndex()
@@ -100,42 +106,29 @@ class CategoryControllerTest extends TestCase
 
     public function testStore()
     {
-        $data = [
-            'name' => 'test'
-        ];
-        $response = $this->assertStore($data, $data + ['description' => null, 'is_active' => true, 'deleted_at' => null]);
+        $response = $this->assertStore($this->sendData, $this->sendData);
         $response->assertJsonStructure([
-            'created_at', 'updated_at'
+            'created_at',
+            'updated_at',
+            'deleted_at'
         ]);
-
-        $data = [
-            'name' => 'test',
-            'description' => 'description',
-            'is_active' => false
-        ];
-        $this->assertStore($data, $data + ['description' => 'description', 'is_active' => false]);
+        $this->assertStore(
+            $this->sendData + ['is_active' => true],
+            $this->sendData + ['is_active' => true]
+        );
     }
 
     public function testUpdate()
     {
-        $data =   [
-            'name' => 'test',
-            'description' => 'test',
-            'is_active' => true
-        ];
-        $response = $this->assertUpdate($data, $data + ['deleted_at' => null]);
+        $response = $this->assertUpdate($this->sendData, $this->sendData);
         $response->assertJsonStructure([
-            'created_at', 'updated_at'
+            'created_at',
+            'updated_at',
         ]);
-
-        $data =   [
-            'name' => 'test',
-            'description' => '',
-        ];
-        $this->assertUpdate($data, array_merge($data, ['description' => null]));
-
-        $data['description'] = 'test';
-        $this->assertUpdate($data, array_merge($data, ['description' => 'test']));
+        $this->assertUpdate(
+            $this->sendData + ['is_active' => true],
+            $this->sendData + ['is_active' => true]
+        );
     }
 
     protected function routeStore()
