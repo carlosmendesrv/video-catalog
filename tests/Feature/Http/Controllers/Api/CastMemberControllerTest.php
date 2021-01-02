@@ -37,54 +37,66 @@ class CastMemberControllerTest extends TestCase
             ->assertJson($this->castMember->toArray());
     }
 
-//    public function testInvalidationData()
-//    {
-//        $data = [
-//            'name' => '',
-//            'type' => ''
-//        ];
-//        $this->assertInvalidationStoreAction($data, 'required');
-//        $this->assertInvalidationUpdateAction($data, 'required');
-//
-//        $data = [
-//            'type' => 's'
-//        ];
-//        $this->assertInvalidationStoreAction($data, 'in');
-//        $this->assertInvalidationUpdateAction($data, 'in');
-//    }
+    public function testInvalidationData()
+    {
+        $data = [
+            'name' => '',
+            'type' => ''
+        ];
+        $this->assertInvalidationStoreAction($data, 'required');
+        $this->assertInvalidationUpdateAction($data, 'required');
 
-//    public function testStore()
-//    {
-//        $data = [
-//            [
-//                'name' => 'test',
-//                'type' => CastMember::TYPE_DIRECTOR
-//            ],
-//            [
-//                'name' => 'test',
-//                'type' => CastMember::TYPE_ACTOR
-//            ]
-//        ];
-//        foreach ($data as $key => $value)
-//        {
-//            $response = $this->assertStore($value, $value + ['deleted_at' => null]);
-//            $response->assertJsonStructure([
-//                'created_at','updated_at'
-//            ]);
-//        }
-//    }
+        $data = [
+            'name' => str_repeat('a', 256),
+        ];
+        $this->assertInvalidationStoreAction($data, 'max.string', ['max' => 255]);
+        $this->assertInvalidationUpdateAction($data, 'max.string', ['max' => 255]);
 
-//    public function testUpdate()
-//    {
-//        $data = [
-//            'name' => 'test',
-//            'type' => CastMember::TYPE_ACTOR
-//        ];
-//        $response = $this->assertUpdate($data, $data + ['deleted_at' => null]);
-//        $response->assertJsonStructure([
-//            'created_at','updated_at'
-//        ]);
-//    }
+        $data = [
+            'type' => '',
+        ];
+        $this->assertInvalidationStoreAction($data, 'required');
+        $this->assertInvalidationUpdateAction($data, 'required');
+
+        $data = [
+            'type' => 'aaa',
+        ];
+        $this->assertInvalidationStoreAction($data, 'in');
+        $this->assertInvalidationUpdateAction($data, 'in');
+    }
+
+    public function testStore()
+    {
+        $data = [
+            [
+                'name' => 'test',
+                'type' => CastMember::TYPE_DIRECTOR
+            ],
+            [
+                'name' => 'test',
+                'type' => CastMember::TYPE_ACTOR
+            ]
+        ];
+        foreach ($data as $key => $value)
+        {
+            $response = $this->assertStore($value, $value + ['deleted_at' => null]);
+            $response->assertJsonStructure([
+                'created_at','updated_at'
+            ]);
+        }
+    }
+
+    public function testUpdate()
+    {
+        $data = [
+            'name' => 'test',
+            'type' => CastMember::TYPE_ACTOR
+        ];
+        $response = $this->assertUpdate($data, $data + ['deleted_at' => null]);
+        $response->assertJsonStructure([
+            'created_at','updated_at'
+        ]);
+    }
 
     public function testDestroy()
     {

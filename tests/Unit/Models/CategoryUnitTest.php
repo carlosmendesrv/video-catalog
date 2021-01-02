@@ -47,9 +47,9 @@ class CategoryUnitTest extends TestCase
         $this->assertCount(count($dates), $this->category->getDates());
     }
 
-//     public function testCast()
-//     {
-//         $casts = ['id' => 'string'];
-//         $this->assertEquals($casts, $this->category->getCasts());
-//     }
+     public function testCast()
+     {
+         $expected  = ['id' => 'string','is_active' => 'boolean'];
+         $this->assertEquals($expected, $this->category->getCasts());
+     }
 }
