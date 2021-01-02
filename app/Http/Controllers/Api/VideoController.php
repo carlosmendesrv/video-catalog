@@ -18,8 +18,8 @@ class VideoController extends BasicCrudController
             'opened' => 'boolean',
             'rating' => 'required|in:' . implode(',', Video::RATING_LIST),
             'duration' => 'required|integer',
-            'categories_id' => 'required|array|exists:categories,id',
-            'genres_id' => 'required|array|exists:genres,id',
+            'categories_id' => 'required|array|exists:categories,id,deleted_at,NULL',
+            'genres_id' => 'required|array|exists:genres,id,deleted_at,NULL',
         ];
     }
 
@@ -27,11 +27,10 @@ class VideoController extends BasicCrudController
     {
         $validateData = $this->validate($request, $this->rulesStore());
         /** @var Video $obj */
-
-        $obj = \DB::transaction(function () use ($request, $validateData) {
+        $self = $this;
+        $obj = \DB::transaction(function () use ($request, $validateData, $self) {
             $obj = $this->model()::create($validateData);
-            $obj->categories()->sync($request->get('categories_id'));
-            $obj->genres()->sync($request->get('genres_id'));
+            $self->handleRelations($obj, $request);
             return $obj;
         });
 
@@ -43,10 +42,19 @@ class VideoController extends BasicCrudController
     {
         $obj = $this->findOrFail($id);
         $validateData = $this->validate($request, $this->rulesUpdate());
-        $obj->update($validateData);
-        $obj->categories()->sync($request->get('categories_id'));
-        $obj->genres()->sync($request->get('genres_id'));
+        $self = $this;
+        $obj = \DB::transaction(function () use ($request, $validateData, $self, $obj) {
+            $obj->update($validateData);
+            $self->handleRelations($obj, $request);
+            return $obj;
+        });
         return $obj;
+    }
+
+    protected function handleRelations($video, Request $request)
+    {
+        $video->categories()->sync($request->get('categories_id'));
+        $video->genres()->sync($request->get('genres_id'));
     }
 
     protected function model()
